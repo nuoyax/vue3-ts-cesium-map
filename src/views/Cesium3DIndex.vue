@@ -386,8 +386,8 @@ export default defineComponent({
     .card {
       pointer-events: auto; // ✅ 开启点击
       cursor: pointer; // 鼠标悬停显示手型（可选）
-      font-size: 10px;
-      background: rgba(2, 2, 31, 0.5);
+      font-size: calc(10px + 0.3vw);
+      background: rgba(21, 52, 92, 0.726);
       border-radius: 10px;
       padding: 10px;
       padding-top: 2px;
@@ -407,7 +407,7 @@ export default defineComponent({
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 8px; // ✅ 缩小字体
+  font-size: calc(8px + 0.3vw); // ✅ 缩小字体
   th,
   td {
     border: 1px solid #ddd;
