@@ -326,7 +326,27 @@ export const getMapView = (): any => {
 
 // 获取底图层级list
 export const getMapImageryList = (): any => {
-  return http.request("get", "/base/getMapImageryList");
+  return Promise.resolve({
+    "code": 1,
+    "msg": "",
+    "time": "1758714740",
+    "data": [
+        {
+            "id": 14,
+            "name": "高德地图01",
+            "type": "UrlTemplateImageryProvider",
+            "classConfig": "{\"url\":\"http:\/\/webst03.is.autonavi.com\/appmaptile?x={x}&y={y}&z={z}&style=7\"}",
+            "interfaceConfig": "{\"saturation\":\"0.0\",\"brightness\":\"0.6\",\"contrast\":\"1.8\",\"hue\":\"1\",\"gamma\":\"0.3\"}",
+            "offset": "0,0",
+            "invertswitch": 1,
+            "filterRGB": "#4e70a6",
+            "showswitch": 1,
+            "weigh": 2,
+            "createtime": 1624326728,
+            "updatetime": 1646979297
+        }
+    ]
+})
 };
 
 // 设置地图初始化视角
