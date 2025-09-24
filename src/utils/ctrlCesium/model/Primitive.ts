@@ -8,47 +8,44 @@
  * @LastEditTime: 2021-11-10 16:02:00
  */
 class PrimitiveController {
-  viewer: any
-  pointDraged: any
-  leftDownFlag: boolean
-  id: string
-  update_position: any
-  modelList: any
+  viewer: any;
+  pointDraged: any;
+  leftDownFlag: boolean;
+  id: string;
+  update_position: any;
+  modelList: any;
   constructor(viewer: any) {
-    this.viewer = viewer
-    this.pointDraged = null
-    this.leftDownFlag = false
-    this.id = ''
-    this.update_position = null
-    this.modelList = []
+    this.viewer = viewer;
+    this.pointDraged = null;
+    this.leftDownFlag = false;
+    this.id = "";
+    this.update_position = null;
+    this.modelList = [];
   }
   removeMouseEvent() {
     this.viewer.screenSpaceEventHandler.removeInputAction(
       Cesium.ScreenSpaceEventType.LEFT_DOWN
-    )
+    );
     this.viewer.screenSpaceEventHandler.removeInputAction(
       Cesium.ScreenSpaceEventType.LEFT_UP
-    )
+    );
     this.viewer.screenSpaceEventHandler.removeInputAction(
       Cesium.ScreenSpaceEventType.MOUSE_MOVE
-    )
+    );
   }
   addMouseEvent() {
-    const _this = this
+    const _this = this;
     function leftDownAction(e: any) {
-      _this.pointDraged = _this.viewer.scene.pick(e.position) // 选取当前
-      if (
-        _this.pointDraged &&
-        _this.pointDraged.id === _this.id
-      ) {
-        _this.leftDownFlag = true
-        _this.viewer.scene.screenSpaceCameraController.enableRotate = false // 锁定相机
+      _this.pointDraged = _this.viewer.scene.pick(e.position); // 选取当前
+      if (_this.pointDraged && _this.pointDraged.id === _this.id) {
+        _this.leftDownFlag = true;
+        _this.viewer.scene.screenSpaceCameraController.enableRotate = false; // 锁定相机
       }
     }
     function leftUpAction(e: any) {
-      _this.leftDownFlag = false
-      _this.pointDraged = null
-      _this.viewer.scene.screenSpaceCameraController.enableRotate = true // 解锁相机
+      _this.leftDownFlag = false;
+      _this.pointDraged = null;
+      _this.viewer.scene.screenSpaceCameraController.enableRotate = true; // 解锁相机
     }
     function mouseMoveAction(e: any) {
       if (
@@ -56,33 +53,36 @@ class PrimitiveController {
         _this.pointDraged !== null &&
         _this.pointDraged !== undefined
       ) {
-        const ray = _this.viewer.camera.getPickRay(e.endPosition)
-        const cartesian = _this.viewer.scene.globe.pick(ray, _this.viewer.scene)
+        const ray = _this.viewer.camera.getPickRay(e.endPosition);
+        const cartesian = _this.viewer.scene.globe.pick(
+          ray,
+          _this.viewer.scene
+        );
         // _this.pointDraged.id.position = cartesian // 此处根据具体entity来处理，也可能是pointDraged.id.position=cartesian;
         // 这里笛卡尔坐标转 经纬度
-        const ellipsoid = _this.viewer.scene.globe.ellipsoid
-        const cartographic = ellipsoid.cartesianToCartographic(cartesian)
-        const lat = Cesium.Math.toDegrees(cartographic.latitude)
-        const lng = Cesium.Math.toDegrees(cartographic.longitude)
-        _this.pointDraged.primitive.attributes.lon = lng
-        _this.pointDraged.primitive.attributes.lat = lat
+        const ellipsoid = _this.viewer.scene.globe.ellipsoid;
+        const cartographic = ellipsoid.cartesianToCartographic(cartesian);
+        const lat = Cesium.Math.toDegrees(cartographic.latitude);
+        const lng = Cesium.Math.toDegrees(cartographic.longitude);
+        _this.pointDraged.primitive.attributes.lon = lng;
+        _this.pointDraged.primitive.attributes.lat = lat;
         if (_this.update_position) {
-          _this.update_position({lon: lng.toFixed(8), lat: lat.toFixed(8)})
+          _this.update_position({ lon: lng.toFixed(8), lat: lat.toFixed(8) });
         }
       }
     }
     this.viewer.screenSpaceEventHandler.setInputAction(
       leftDownAction,
       Cesium.ScreenSpaceEventType.LEFT_DOWN
-    )
+    );
     this.viewer.screenSpaceEventHandler.setInputAction(
       leftUpAction,
       Cesium.ScreenSpaceEventType.LEFT_UP
-    )
+    );
     this.viewer.screenSpaceEventHandler.setInputAction(
       mouseMoveAction,
       Cesium.ScreenSpaceEventType.MOUSE_MOVE
-    )
+    );
   }
   /**
    * 控制primitiveCollection显隐
@@ -91,8 +91,8 @@ class PrimitiveController {
    */
   changePrimitiveVisibility(primitiveCollection: any, flag: boolean) {
     primitiveCollection.forEach((value: any) => {
-      value.show = flag
-    })
+      value.show = flag;
+    });
   }
 
   /**
@@ -102,9 +102,9 @@ class PrimitiveController {
   deletePrimitiveCollection(primitiveCollection: any) {
     primitiveCollection.forEach((value: any) => {
       // 清除模型绑定的定时器
-      if (value.setIntervalId) clearInterval(value.setIntervalId)
-      this.viewer.scene.primitives.remove(value)
-    })
+      if (value.setIntervalId) clearInterval(value.setIntervalId);
+      this.viewer.scene.primitives.remove(value);
+    });
   }
 
   /**
@@ -113,18 +113,17 @@ class PrimitiveController {
    * @param {Boolean} flag
    */
   changePrimitiveVisibilityById(id: string, flag: boolean) {
-    const primitives = this.viewer.scene.primitives
-    let primitive = null
+    const primitives = this.viewer.scene.primitives;
+    let primitive = null;
     primitives.forEach((value: any) => {
       if (value.id === id) {
-        primitive = value
+        primitive = value;
       }
-    })
+    });
     if (primitive) {
-      primitive.show = flag
-    }
-    else {
-      console.log(`不存在id为${id}的primitive`)
+      primitive.show = flag;
+    } else {
+      console.log(`不存在id为${id}的primitive`);
     }
   }
   /**
@@ -133,146 +132,151 @@ class PrimitiveController {
    * @param {String} color
    */
   changePrimitiveColor(id: string, color: string) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.color = new Cesium.Color.fromCssColorString(color)
+      primitive.color = new Cesium.Color.fromCssColorString(color);
     }
   }
   changePrimitiveIntervalTime(id: string, time: number) {
-    const _this = this
-    let primitive = this.findPrimitiveById(id)
+    const _this = this;
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      if (primitive.setIntervalId) clearInterval(primitive.setIntervalId)
+      if (primitive.setIntervalId) clearInterval(primitive.setIntervalId);
       const setIntervalId = setInterval(() => {
-        primitive.heading += Cesium.Math.toRadians(primitive.attributes.rotateSpeed || 0)
-        primitive.modelMatrix = _this._changeModelMatrix(primitive)
-      }, time)
-      primitive.setIntervalId = setIntervalId // 用于清除定时器
+        primitive.heading += Cesium.Math.toRadians(
+          primitive.attributes.rotateSpeed || 0
+        );
+        primitive.modelMatrix = _this._changeModelMatrix(primitive);
+      }, time);
+      primitive.setIntervalId = setIntervalId; // 用于清除定时器
     }
   }
   changePrimitiverotateSpeed(id: string, rotateSpeed: number) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.attributes.rotateSpeed = rotateSpeed
+      primitive.attributes.rotateSpeed = rotateSpeed;
     }
   }
   changePrimitiveMinimumPixelSize(id: string, minimumPixelSize: number) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.minimumPixelSize = minimumPixelSize
+      primitive.minimumPixelSize = minimumPixelSize;
     }
   }
   changePrimitiveHeight(id: string, height: number) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.attributes.height = height
+      primitive.attributes.height = height;
     }
   }
-  changePrimitivePosition(id: string, positionLon: number, positionLat: number) {
-    let primitive = this.findPrimitiveById(id)
+  changePrimitivePosition(
+    id: string,
+    positionLon: number,
+    positionLat: number
+  ) {
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.attributes.lon = positionLon
-      primitive.attributes.lat = positionLat
+      primitive.attributes.lon = positionLon;
+      primitive.attributes.lat = positionLat;
     }
   }
   changePrimitiveLatRotation(id: string, LatRotation: number) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.attributes.heading = LatRotation
-      primitive.heading = LatRotation
-      primitive.modelMatrix = this._changeModelMatrix(primitive)
+      primitive.attributes.heading = LatRotation;
+      primitive.heading = LatRotation;
+      primitive.modelMatrix = this._changeModelMatrix(primitive);
     }
   }
   changePrimitiveScale(id: string, scale: number) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      primitive.scale = scale
+      primitive.scale = scale;
     }
   }
   changePrimitiveColorBlendMode(id: string, mode: string) {
-    let primitive = this.findPrimitiveById(id)
+    let primitive = this.findPrimitiveById(id);
     if (primitive) {
-      let modeA = Cesium.ColorBlendMode.HIGHLIGHT
+      let modeA = Cesium.ColorBlendMode.HIGHLIGHT;
       switch (mode) {
-        case 'HIGHLIGHT':
-          modeA = Cesium.ColorBlendMode.HIGHLIGHT
-          break
-        case 'MIX':
-          modeA = Cesium.ColorBlendMode.MIX
-          break
-        case 'REPLACE':
-          modeA = Cesium.ColorBlendMode.REPLACE
-          break
-        default :
+        case "HIGHLIGHT":
+          modeA = Cesium.ColorBlendMode.HIGHLIGHT;
+          break;
+        case "MIX":
+          modeA = Cesium.ColorBlendMode.MIX;
+          break;
+        case "REPLACE":
+          modeA = Cesium.ColorBlendMode.REPLACE;
+          break;
+        default:
       }
-      primitive.colorBlendMode = modeA
+      primitive.colorBlendMode = modeA;
     }
   }
   findPrimitiveById(id: string) {
-    const primitives = this.viewer.scene.primitives._primitives
-    let primitive = null
+    const primitives = this.viewer.scene.primitives._primitives;
+    let primitive = null;
     primitives.forEach((value: any) => {
       if (value.id === id) {
-        primitive = value
+        primitive = value;
       }
-    })
-    return primitive
+    });
+    return primitive;
   }
   /**
    * 根据id，删除单个pimitive
    * @param {String} id
    */
   deleteprimitiveById(id: string) {
-    const primitives = this.viewer.scene.primitives
-    let primitive = null
+    const primitives = this.viewer.scene.primitives;
+    let primitive = null;
     primitives.forEach((value) => {
       if (value.id === id) {
-        primitive = value
+        primitive = value;
       }
-    })
+    });
     if (primitive) {
       // 清除模型绑定的定时器
-      if (primitive.setIntervalId) clearInterval(primitive.setIntervalId)
-      this.viewer.scene.primitives.remove(primitive)
-    }
-    else {
-      console.log(`不存在id为${id}的primitive`)
+      if (primitive.setIntervalId) clearInterval(primitive.setIntervalId);
+      this.viewer.scene.primitives.remove(primitive);
+    } else {
+      console.log(`不存在id为${id}的primitive`);
     }
   }
   _changeModelMatrix(model: any) {
     // model.heading += Cesium.Math.toRadians(model.attributes.rotateSpeed || 0)
-    const pitch = Cesium.defaultValue(model.attributes.pitch, 0.0)
-    const roll = Cesium.defaultValue(model.attributes.roll, 0.0)
-    const hpr = new Cesium.HeadingPitchRoll(model.heading, pitch, roll)
+    const pitch = Cesium.defaultValue(model.attributes.pitch, 0.0);
+    const roll = Cesium.defaultValue(model.attributes.roll, 0.0);
+    const hpr = new Cesium.HeadingPitchRoll(model.heading, pitch, roll);
 
     const position = Cesium.Cartesian3.fromDegrees(
       model.attributes.lon,
       model.attributes.lat,
       model.attributes.height
-    )
+    );
     const modelMatrix = Cesium.Transforms.headingPitchRollToFixedFrame(
       position,
       hpr
-    )
-    return modelMatrix
+    );
+    return modelMatrix;
   }
 }
-import { getPrimitivesList } from '@/api/model'
+import { getPrimitivesList } from "@/api/model";
 /**
  * primitive要素类
  */
 class Primitives extends PrimitiveController {
   constructor(viewer: any) {
-    super(viewer)
+    super(viewer);
   }
   async init() {
-    const res: any = await getPrimitivesList()
-    const _this = this
+    const _this = this;
+    const res: any = await getPrimitivesList();
+
     if (res.data) {
       res.data.forEach((element: any, index: number) => {
-        let points =
-        {
-          id: 'pimitiveModelList' + element.id,
+        let points = {
+          id: "pimitiveModelList" + element.id,
           lon: element.positionLon,
           lat: element.positionLat,
           height: element.height,
@@ -285,12 +289,64 @@ class Primitives extends PrimitiveController {
           rotateSpeed: element.rotateSpeed, // 转速
           modelColor: element.color,
           minimumPixelSize: element.minimumPixelSize, // 模型最小以多少像素显示
-          duration: element.duration
-        }
-        let options = {}
-        _this.modelList.push(_this.showModels(points, options))
-      })
+          duration: element.duration,
+        };
+        let options = {};
+        _this.modelList.push(_this.showModels(points, options));
+      });
     }
+
+    // 随机生成数量：10 ~ 50
+    const count = Math.floor(Math.random() * 41) + 10;
+    const position: any = this.generateRandomPositions(
+      113.9462890625,
+      22.5458984375,
+      count
+    );
+    Array.from({ length: count }).forEach((element, _index) => {
+      const { lon, lat } = position[_index || 0];
+      console.info("_this.modelLis", position[_index || 0]);
+      let points = {
+        id: "pimitiveModelList" + _index + 5,
+        lon,
+        lat,
+        height: 420,
+        heading: 3.76,
+        pitch: 0,
+        roll: 0,
+        colorMode: "REPLACE",
+        uri: "https://jdvop.oss-cn-qingdao.aliyuncs.com/mapv-data/model/pyramid.glb",
+        scale: 200,
+        rotateSpeed: 6, // 转速
+        modelColor: "red",
+        minimumPixelSize: 20, // 模型最小以多少像素显示
+        duration: 19,
+      };
+      let options = {};
+      _this.modelList.push(_this.showModels(points, options));
+    });
+  }
+  // 随机坐标（±5 公里范围）
+  generateRandomPositions(centerLon = 110, centerLat = 30, count = 30) {
+    const result = [];
+    const km = 3; // 5公里
+    // 1° 纬度 ≈111 km
+    const latOffset = km / 111;
+    // 经度需根据纬度修正，1° 经度 ≈111*cos(lat) km
+    const lonOffset = km / (111 * Math.cos((centerLat * Math.PI) / 180));
+
+    for (let i = 0; i < count; i++) {
+      const lon = centerLon + (Math.random() - 0.5) * 2 * lonOffset;
+      const lat = centerLat + (Math.random() - 0.5) * 2 * latOffset;
+      result.push({ lon, lat });
+    }
+    return result;
+  }
+  // 随机 HEX 颜色
+  getRandomColorHex() {
+    return `#${Math.floor(Math.random() * 0xffffff)
+      .toString(16)
+      .padStart(6, "0")}`;
   }
   /**
    * 添加模型
@@ -298,30 +354,27 @@ class Primitives extends PrimitiveController {
    * @param {*} options 模型配置
    */
   showModels(points: any, options: any) {
-    const _this = this
-    const primitives = this.viewer.scene.primitives
-    let id, model, toRadians, position, modelMatrix, hpr, modelColor
-    toRadians = Cesium.Math.toRadians
-    let value = points
-    id = value.id ? value.id : 'pimitiveModel_0'
-    _this.id = id
+    const _this = this;
+    const primitives = this.viewer.scene.primitives;
+    let id, model, toRadians, position, modelMatrix, hpr, modelColor;
+    toRadians = Cesium.Math.toRadians;
+    let value = points;
+    id = value.id ? value.id : "pimitiveModel_0";
+    _this.id = id;
     modelColor = new Cesium.Color.fromCssColorString(
-      value.modelColor || options.modelColor || 'rgba(0,255,255,0.5)'
-    ) // 模型颜色
+      value.modelColor || options.modelColor || "rgba(0,255,255,0.5)"
+    ); // 模型颜色
     position = Cesium.Cartesian3.fromDegrees(
       value.lon,
       value.lat,
       value.height
-    )
+    );
     hpr = new Cesium.HeadingPitchRoll(
       toRadians(value.heading),
       toRadians(value.pitch),
       toRadians(value.roll)
-    )
-    modelMatrix = Cesium.Transforms.headingPitchRollToFixedFrame(
-      position,
-      hpr
-    )
+    );
+    modelMatrix = Cesium.Transforms.headingPitchRollToFixedFrame(position, hpr);
     model = primitives.add(
       Cesium.Model.fromGltf({
         id: id,
@@ -333,20 +386,22 @@ class Primitives extends PrimitiveController {
         maximumScale: 5000,
         minimumPixelSize: value.minimumPixelSize || 20,
         scene: _this.viewer.scene,
-        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
+        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
       })
-    )
-    this.changePrimitiveColorBlendMode(id, value.colorMode)
-    model.attributes = value
-    model.heading = value.heading
-    model.readyPromise.then(function(model: any) {
+    );
+    this.changePrimitiveColorBlendMode(id, value.colorMode);
+    model.attributes = value;
+    model.heading = value.heading;
+    model.readyPromise.then(function (model: any) {
       const setIntervalId = setInterval(() => {
-        model.heading += Cesium.Math.toRadians(model.attributes.rotateSpeed || 0)
-        model.modelMatrix = _this._changeModelMatrix(model)
-      }, value.duration)
-      model.setIntervalId = setIntervalId // 用于清除定时器
-    })
-    return model
+        model.heading += Cesium.Math.toRadians(
+          model.attributes.rotateSpeed || 0
+        );
+        model.modelMatrix = _this._changeModelMatrix(model);
+      }, value.duration);
+      model.setIntervalId = setIntervalId; // 用于清除定时器
+    });
+    return model;
   }
 }
-export default Primitives
+export default Primitives;

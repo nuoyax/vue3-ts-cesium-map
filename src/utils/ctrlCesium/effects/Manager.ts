@@ -7,79 +7,104 @@
  * @LastEditTime: 2021-09-28 16:43:54
  */
 /* eslint-disable no-debugger */
-import { getPointsEffectList } from '@/api/effect'
-import EllipsoidFade from '@/utils/ctrlCesium/effects/EllipsoidFade'
-import HexagonSpread from '@/utils/ctrlCesium/effects/HexagonSpread'
-import Scanline from '@/utils/ctrlCesium/effects/Scanline'
-import CircleWave from '@/utils/ctrlCesium/effects/CircleWave'
-import RaderScan from '@/utils/ctrlCesium/effects/RaderScan'
-import SpreadWall from '@/utils/ctrlCesium/effects/SpreadWall'
+import { getPointsEffectList } from "@/api/effect";
+import EllipsoidFade from "@/utils/ctrlCesium/effects/EllipsoidFade";
+import HexagonSpread from "@/utils/ctrlCesium/effects/HexagonSpread";
+import Scanline from "@/utils/ctrlCesium/effects/Scanline";
+import CircleWave from "@/utils/ctrlCesium/effects/CircleWave";
+import RaderScan from "@/utils/ctrlCesium/effects/RaderScan";
+import SpreadWall from "@/utils/ctrlCesium/effects/SpreadWall";
 // 效果集合管理控制
 class Manager {
-  viewer: any
-  EffectsList: Array<any>
+  viewer: any;
+  EffectsList: Array<any>;
   constructor(viewer: any) {
-    this.viewer = viewer
-    this.EffectsList = []
+    this.viewer = viewer;
+    this.EffectsList = [];
   }
   async init() {
     // 首先从数据中 获取需要展示的数据
-    const res: any = await getPointsEffectList()
-    const _this = this
+    const res: any = await getPointsEffectList();
+    const _this = this;
     if (res.data) {
       res.data.forEach((element: any, index: number) => {
-        _this.add(element, index)
-      })
+        _this.add(element, index);
+      });
+      // this.addRandomHexagonPoints(this.viewer, 15);
+    }
+  }
+
+  addRandomHexagonPoints(viewer: any, count = 10) {
+    for (let i = 0; i < count; i++) {
+      const lon = 113.9 + Math.random() * 0.1; // 经度随机偏移
+      const lat = 22.5 + Math.random() * 0.1; // 纬度随机偏移
+      const height = 0; // 高度（米）
+      const color = Cesium.Color.fromRandom({
+        // 随机颜色
+        alpha: 0.8,
+      });
+      const radius = 2000 + Math.random() * 1000; // 半径
+      const duration = 2000 + Math.random() * 1000; // 动画时长
+
+      const hex = new HexagonSpread(viewer, "hexagon-" + i);
+      hex.add([lon, lat, height], color, radius, duration);
     }
   }
   add(ele: any, index: number) {
-    let curEntityC = null
-    let pe = [ele.lon, ele.lat, ele.height]
-    let ext: any
+    let curEntityC = null;
+    let pe = [ele.lon, ele.lat, ele.height];
+    let ext: any;
     switch (ele.effect_type) {
-      case 'CircleDiffusion':
+      case "CircleDiffusion":
         curEntityC = new EllipsoidFade(
           this.viewer,
-          'effect-set-config' + ele.effect_type + index
-        )
-        curEntityC.add(pe, ele.color, ele.radius, ele.duration)
-        break
-      case 'Scanline':
+          "effect-set-config" + ele.effect_type + index
+        );
+        curEntityC.add(pe, ele.color, ele.radius, ele.duration);
+        break;
+      case "Scanline":
         curEntityC = new Scanline(
           this.viewer,
-          'effect-set-config' + ele.effect_type + index
-        )
-        curEntityC.add(pe, ele.color, ele.radius, ele.duration)
-        break
-      case 'CircleWave':
+          "effect-set-config" + ele.effect_type + index
+        );
+        curEntityC.add(pe, ele.color, ele.radius, ele.duration);
+        break;
+      case "CircleWave":
         curEntityC = new CircleWave(
           this.viewer,
-          'effect-set-config' + ele.effect_type + index
-        )
-        ext = JSON.parse(ele.ext)
-        curEntityC.add(pe, ele.color, ele.radius, ele.duration, false, ext.waveCount)
-        break
-      case 'HexagonSpread':
+          "effect-set-config" + ele.effect_type + index
+        );
+        ext = JSON.parse(ele.ext);
+        curEntityC.add(
+          pe,
+          ele.color,
+          ele.radius,
+          ele.duration,
+          false,
+          ext.waveCount
+        );
+        break;
+      case "HexagonSpread":
         curEntityC = new HexagonSpread(
           this.viewer,
-          'effect-set-config' + ele.effect_type + index
-        )
-        curEntityC.add(pe, ele.color, ele.radius, ele.duration)
-        break
-      case 'CircleScan':
+          "effect-set-config" + ele.effect_type + index
+        );
+        curEntityC.add(pe, ele.color, ele.radius, ele.duration);
+        break;
+      case "CircleScan":
         curEntityC = new RaderScan(
           this.viewer,
-          'effect-set-config' + ele.effect_type + index
-        )
-        ext = JSON.parse(ele.ext)
-        curEntityC.add(pe, ele.color, ele.radius, ext.step)
-        break
-      case 'SpreadWall':
+          "effect-set-config" + ele.effect_type + index
+        );
+        ext = JSON.parse(ele.ext);
+        curEntityC.add(pe, ele.color, ele.radius, ext.step);
+        break;
+      case "SpreadWall":
         curEntityC = new SpreadWall(
           this.viewer,
-          'effect-set-config' + ele.effect_type + index
-        )
-        ext = JSON.parse(ele.ext)
+          "effect-set-config" + ele.effect_type + index
+        );
+        ext = JSON.parse(ele.ext);
         curEntityC.add(
           pe,
           ele.color,
@@ -87,13 +112,13 @@ class Manager {
           ele.duration,
           ext.height,
           ext.edgeCount
-        )
-        break
+        );
+        break;
       default:
     }
     if (curEntityC) {
-      this.EffectsList.push(curEntityC)
+      this.EffectsList.push(curEntityC);
     }
   }
 }
-export default Manager
+export default Manager;
